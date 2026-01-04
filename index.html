@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>YT2Down - Free Media Downloader</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        'bg-primary': '#0A0A0A',
+        'bg-secondary': '#171717',
+        'accent': '#00A9FF',
+        'accent-hover': '#0087CC',
+        'text-primary': '#F5F5F5',
+        'text-secondary': '#A3A3A3',
+        'card-border': 'rgba(255, 255, 255, 0.08)',
+        'error': '#FF4D4D',
+      },
+      fontFamily: {
+        sans: ['Inter', 'Segoe UI', '-apple-system', 'BlinkMacSystemFont', 'Roboto', 'Arial', 'sans-serif'],
+      },
+    }
+  }
+}
+</script>
+
+<style>
+body {
+  background-color: #0A0A0A;
+  font-family: 'Inter', sans-serif;
+  color: #F5F5F5;
+  margin: 0;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #171717;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.navbar a { color: #F5F5F5; font-weight: 500; transition: color 0.2s; }
+.navbar a:hover { color: #00A9FF; cursor: pointer; }
+
+/* Container */
+.container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+
+/* Input + button */
+.input-group { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+.input-group input {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: #171717;
+  color: #F5F5F5;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s;
+}
+.input-group input:focus { border: 2px solid #00A9FF; }
+.input-group button {
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  background-color: #00A9FF;
+  color: #0A0A0A;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.input-group button:hover { background-color: #0087CC; }
+
+/* Spotlight */
+.spotlight-card { position: relative; overflow: hidden; border-radius: 0.5rem; }
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(circle at var(--mouse-x,50%) var(--mouse-y,50%), rgba(0,169,255,0.15), transparent 80%);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1;
+}
+.spotlight-card:hover::before { opacity: 1; }
+.spotlight-card > * { position: relative; z-index: 2; }
+
+iframe { width: 100%; height: 600px; border: none; border-radius: 0.5rem; margin-bottom: 2rem; }
+
+/* Info box */
+.info-box { background-color: #171717; border-radius: 0.5rem; padding: 1rem 1.5rem; margin-bottom: 2rem; text-align: center; }
+.info-box p { margin: 0.5rem 0; }
+
+/* Platforms section */
+.platforms { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+.platform-card { background-color: #171717; padding: 1rem; border-radius: 0.5rem; width: 120px; text-align: center; transition: transform 0.2s; }
+.platform-card:hover { transform: scale(1.05); }
+.platform-card img { width: 60px; height: 60px; margin-bottom: 0.5rem; }
+</style>
+</head>
+
+<body>
+<!-- Navbar -->
+<div class="navbar">
+  <div class="logo text-xl font-bold">YT2Down</div>
+  <a onclick="showAbout()">About Me</a>
+</div>
+
+<div class="container">
+  <h1 class="text-3xl font-bold text-center mb-6">YT2Down - Free Media Downloader</h1>
+
+  <!-- Instructions -->
+  <div class="info-box">
+    <p><b>How to use:</b> Paste a YouTube link or other supported platform URL into the input box below and click <b>Load</b>. Then click the <b>Download</b> button inside the player to save the video or audio.</p>
+    <p><b>Supported platforms:</b> YouTube, Vimeo, Dailymotion, Facebook, and more.</p>
+    <p><b>Note:</b> Availability depends on the third-party service.</p>
+  </div>
+
+  <!-- Input + button -->
+  <div class="input-group spotlight-card">
+    <input type="text" id="urlInput" placeholder="Paste your URL here">
+    <button onclick="loadIframe()">Load</button>
+  </div>
+
+  <!-- Dynamic iframe -->
+  <iframe id="dynamicIframe"></iframe>
+
+  <!-- About Me Modal -->
+  <div id="aboutModal" class="fixed inset-0 bg-black bg-opacity-80 hidden justify-center items-center z-50">
+    <div class="bg-bg-secondary p-6 rounded-lg max-w-3xl w-full relative">
+      <button onclick="closeAbout()" class="absolute top-3 right-3 text-xl">&times;</button>
+      <h2 class="text-xl font-bold mb-4">About Me</h2>
+      <p>Hi! My name is <b>Ancor Montalvo</b>, I’m <b>13 years old</b>, and I’m passionate about technology, coding, and creating cool web projects.</p>
+      <p>Even at my age, I love experimenting with HTML, CSS, and JavaScript, learning new ways to make websites interactive and visually appealing.</p>
+      <p>I enjoy exploring online tools, building small apps, and sharing my work with friends and the community. My goal is to keep learning and one day create professional-level projects that combine design, functionality, and innovation.</p>
+      <p>Outside of coding, I like gaming, and discovering new technologies that inspire me to keep improving.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function loadIframe() {
+  const url = document.getElementById('urlInput').value.trim();
+  if(!url) { alert('Please enter a valid URL'); return; }
+  const iframe = document.getElementById('dynamicIframe');
+  iframe.src = "https://clickapi.net/api/widgetplus?url=" + encodeURIComponent(url);
+}
+
+// Spotlight mouse tracking
+const card = document.querySelector('.spotlight-card');
+card?.addEventListener('mousemove', e => {
+  const rect = card.getBoundingClientRect();
+  card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+  card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+});
+
+// About modal
+function showAbout() { document.getElementById('aboutModal').classList.remove('hidden'); document.getElementById('aboutModal').classList.add('flex'); }
+function closeAbout() { document.getElementById('aboutModal').classList.add('hidden'); document.getElementById('aboutModal').classList.remove('flex'); }
+</script>
+
+</body>
+</html>
